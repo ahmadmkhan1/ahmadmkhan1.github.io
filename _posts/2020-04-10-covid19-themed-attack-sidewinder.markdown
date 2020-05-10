@@ -1,16 +1,16 @@
 ---
 layout: post
-title: "Analyzing COVID-19 Themed Attack Campaign by APT Sidewinder"
+title: "Sidewinder: COVID-19 Themed Attack Campaign"
 date: 2020-04-10 06:00:00 +0530
 categories: ["threatresearch"]
 tags: ["sidewinder","rattlesnake","india","pakistan","covid19","apt"]
 
 ---
 
-During the recent spike in COVID-19 themed attacks, cyber-criminals and nation-backed threat actors are using the pandemic as a lure to gain access to critical infrastructure inside organizations.
+Cyber-criminals and nation-backed threat actors are highly utilizing the COVID-19 pandemic as a lure to gain access to critical infrastructure inside organizations.
 
 ## Background
-Sidewinder a.k.a Rattlesnake is believed to be an Indian state-backed APT group. The threat group actively conducts operations targeting military and governments in Pakistan and China and is believed to be operating since 2012.
+Sidewinder a.k.a Rattlesnake is believed to be an Indian state-backed APT group. The threat group actively conducts operations targeting military and government infrastructure in Pakistan and China and is believed to be operating since 2012.
 
 ## Source of Discovery
 The malware sample discovery belongs to the [__RedDrip__](https://twitter.com/RedDrip7) Team who shared two VirusTotal reports.

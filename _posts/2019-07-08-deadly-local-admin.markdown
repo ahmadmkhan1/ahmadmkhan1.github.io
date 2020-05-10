@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Death by Local Admin"
+title: "The Deadly Local Admin"
 date: 2019-07-08 03:00:00 +0530
 categories: ["misc"]
 tags: ["localadmin","cososys","dlp","bypass"]
