@@ -162,4 +162,4 @@ _Duser.dll_ decrypts the file named _"SOHYXY.tmp"_ and deploys the RAT for perfo
 <br>
 
 ---
-[___IOCs and YARA Signatures___](https://github.com/ahmadmkhan1/Threat-Research/blob/master/20200410_sidewinder_covid19-themed-attack-to-deploy-RAT.yar)
+[___IOCs and YARA Signatures___](https://github.com/Ebryx/IOCs/blob/master/SideWinder/yara.yar)
