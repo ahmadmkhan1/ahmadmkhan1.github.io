@@ -34,7 +34,7 @@ The malicious .lnk file contains the address of command and control domain. As s
 The malware dropper 966029e.hta contains highly obfuscated JavaScript code which can be divided into 4 blocks for understanding. Each block of code is meant for different purposes during the first phase of attack.
 
 ### Decryption Block
-The very first function is meant for decoding any base64 string passed to it. The second function consumes an XOR key and a base64 string resulting in decrypted payload. The third function takes a base64 string and sends it to the second function to XOR with a key that is stored in the variable "keeee". Doing an XOR of the hardcoded base64 string "fGNWc3tkXnB0Zg==" with the hardcoded key "MUgF" results in the value of keeee "1615619693" which will be used to de-obfuscate the embedded payload.
+The very first function is meant for decoding any base64 string passed to it. The second function consumes an XOR key and a base64 string resulting in decrypted payload. The third function takes a base64 string and sends it to the second function to XOR with a key that is stored in the variable "keeee". Doing an XOR of the hardcoded base64 string "fGNWc3tkXnB0Zg==" with the hardcoded key "MUgF" results in the value of keeee "1615619693" which will be used to de-obfuscate the embedded payload. As soon as the .hta executes, the window size is changed to (0,0) and moved out of the visible screen i.e. (-1000,-1200) to hide the window from the targeted user.
 
 ```javascript
 function YiJr(str){
@@ -67,6 +67,8 @@ function rBEokCwZ(bsix){
     return xStrAmh(keeee,YiJr(bsix))
 }
 var keeee = xStrAmh("MUgF",YiJr("fGNW"+"c3tk"+"XnB0"+"Zg=="));
+window.resizeTo(0,0);
+window.moveTo(-1000, -1200);
 ```
 
 ### Memory Writing Block
