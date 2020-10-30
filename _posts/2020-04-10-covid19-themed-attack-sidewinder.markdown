@@ -18,8 +18,13 @@ The malware sample discovery belongs to the [__RedDrip__](https://twitter.com/Re
 - [__966029e.hta__](https://www.virustotal.com/gui/file/3d5f133790f807270f6a64743cb593673f820bca4aba406ee08fda1429a340bd/detection)
 - [__Cb2e3e0[1].hta__](https://www.virustotal.com/gui/file/d302e75752341090fcc9a04bdf8ae8300cc4746b2c4abf7539daafaae275c1f0/detection)
 
+and an individual researcher [__Timele12138__](https://twitter.com/Timele9527) who shared two spearphishing documents.
+
+- [__Pak_Army_Deployed_in_Country_in_Fight_Against_Coronavirus.pdf.lnk__](https://www.virustotal.com/gui/file/9b0b837e2c4c06c0754824282b9f39dab7ab5681ff118ca6a6f6e548df13dfd2/detection)
+- [__Additional_CSD_Rebate.pdf.lnk__](https://www.virustotal.com/gui/file/f8b053e32eed9a5e814c89eec50e743a906f1aadc7a6f58e25f0410863c5ec4a/detection)
+
 ## Intrusion Point
-The initial intrusion point of the attack is a spear-phishing email sent to the target. The email contains an executable .lnk file that fakes itself as a PDF. The victim tries to open the PDF and the malicious .lnk file unintentionally gets executed.
+The initial intrusion point of the attack is a spear-phishing email sent to the target and contains exploit CVE-2017-11882 as RTF object. The email contains an executable .lnk file that fakes itself as a PDF. The victim tries to open the PDF and the malicious .lnk file unintentionally gets executed.
 
 <div><center><img src="/assets/img/posts/2020-04-21-lnk-file.png" title="Spear-Phishing .lnk File"></center></div>
 <br>
